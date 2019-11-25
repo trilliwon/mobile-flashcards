@@ -1,53 +1,53 @@
 import { AsyncStorage } from 'react-native'
-import { timeToString, setDummyData } from './helpers'
+import { setDummyData } from './helpers'
 
 const DECKS_STORAGE_KEY = 'UdaciCards:decks'
 
-// getDecks: return all of the decks along with their titles, questions, and answers.
-export function getDesks() {
+export function getEntries() {
   return AsyncStorage.getItem(DECKS_STORAGE_KEY)
-    .then((result) => result === null ? setDummyData() : JSON.parse(result))
+    .then((result) => JSON.parse(result))
 }
 
-// getDeck: take in a single id argument and return the deck associated with that id.
-export function getDeck(id) {
-
+export function getEntry(id) {
+  return AsyncStorage.getItem(DECKS_STORAGE_KEY)
+    .then((result) => JSON.parse(result)[id])
 }
 
-// saveDeckTitle: take in a single title argument and add it to the decks.
-export function saveDekTitle(title) {
-
+export function addEntry(entry) {
+  return AsyncStorage.mergeItem(DECKS_STORAGE_KEY, JSON.stringify({
+    [entry.id]: entry,
+  }))
 }
 
-// addCardToDeck: take in two arguments, title and card, 
-// and will add the card to the list of questions for the deck with the associated title.
-export function addCardToDeck(deckId, title, card) {
+export function changeEntry(newEntry) {
+  return removeEntry(newEntry.id)
+    .then(() => {
+      return addEntry(newEntry)
+    })
+}
 
+export function removeEntry(id) {
+  return AsyncStorage.getItem(DECKS_STORAGE_KEY)
+    .then((results) => {
+      const data = JSON.parse(results)
+      data[id] = undefined
+      delete data[id]
+      AsyncStorage.setItem(DECKS_STORAGE_KEY, JSON.stringify(data))
+    })
 }
 
 /**
- {
-  React: {
+decks : {
+  'asdjjvkashdfhenaksff2': {
     title: 'React',
+    id: 'asdjjvkashdfhenaksff2',
+    timestamp: 123714516419723
     questions: [
       {
-        question: 'What is React?',
-        answer: 'A library for managing user interfaces'
-      },
-      {
-        question: 'Where do you make Ajax requests in React?',
-        answer: 'The componentDidMount lifecycle event'
-      }
-    ]
-  },
-  JavaScript: {
-    title: 'JavaScript',
-    questions: [
-      {
-        question: 'What is a closure?',
-        answer: 'The combination of a function and the lexical environment within which that function was declared.'
+        question: '',
+        answer: ''
       }
     ]
   }
 }
- */
+*/

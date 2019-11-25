@@ -1,5 +1,21 @@
 import React from 'react'
 
+export function generateUID() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+}
+
+export function formatNewDeck(title) {
+    const id = generateUID()
+    const entry = {
+        title,
+        timestamp: Date.now(),
+        id,
+        questions: [],
+    }
+
+    return entry
+}
+
 export function timeToString(time = Date.now()) {
     const date = new Date(time)
     const todayUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
@@ -8,9 +24,12 @@ export function timeToString(time = Date.now()) {
 
 export function setDummyData() {
     let dummyData = {}
+    const reactDeckId = generateUID()
+    const javascriptDeckId = generateUID()
 
     const reactDummyDeck = {
         title: 'React',
+        id: reactDeckId,
         questions: [
             {
                 question: 'What is React?',
@@ -25,6 +44,7 @@ export function setDummyData() {
 
     const javascriptDummyDeck = {
         title: 'JavaScript',
+        id: javascriptDeckId,
         questions: [
             {
                 question: 'What is a closure?',
@@ -33,8 +53,8 @@ export function setDummyData() {
         ]
     }
 
-    dummyData['React'] = reactDummyDeck
-    dummyData['Javascript'] = javascriptDummyDeck
+    dummyData[reactDeckId] = reactDummyDeck
+    dummyData[javascriptDeckId] = javascriptDummyDeck
 
     return dummyData
 }

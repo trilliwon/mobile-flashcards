@@ -1,69 +1,68 @@
 import React, { Component } from 'react'
-import {
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    KeyboardAvoidingView,
-} from 'react-native'
-import { connect } from 'react-redux'
-import { handleAddDeck } from '../actions'
+import { KeyboardAvoidingView, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 import { main, white } from '../utils/colors'
+import { connect } from 'react-redux'
+import { handleAddCard } from '../actions'
 import { NavigationActions } from 'react-navigation'
-import { formatNewDeck } from '../utils/helpers'
 
-class AddDeck extends Component {
+class AddCard extends Component {
 
     state = {
-        input: '',
+        question: '',
+        answer: '',
     }
 
-    onChangeText = (text) => {
+    onChangeQuestionText = (text) => {
         this.setState(() => ({
-            input: text
+            question: text,
+        }))
+    }
+
+    onChangeAnswerText = (text) => {
+        this.setState(() => ({
+            answer: text,
         }))
     }
 
     onPressSubmit = () => {
-        const { dispatch } = this.props
-        const { input } = this.state
-        const newDeck = formatNewDeck(input)
-        dispatch(handleAddDeck(newDeck))
-        this.setState(() => ({
-            input: '',
-        }))
-        this.toHome()
+        const { dispatch, deck } = this.props
+        const { question, answer } = this.state
+        dispatch(handleAddCard(deck, question, answer))
+        this.toDeckDetail()
     }
 
-    toHome = () => {
-        this.props.navigation.dispatch(NavigationActions.back({ key: 'AddDeck' }))
+    toDeckDetail = () => {
+        this.props.navigation.dispatch(NavigationActions.back())
     }
 
     render() {
-        const { input } = this.state
-        const submitDisabled = input === ''
+        const { question, answer } = this.state
+        const submitDisabled = question === '' || answer === ''
+
         return (
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                <Text style={styles.title}> What is the title of your new deck? </Text>
                 <TextInput
                     style={styles.input}
-                    placeholder='Enter New Deck Title'
-                    onChangeText={this.onChangeText}
-                    value={input}>
+                    placeholder='Enter Question'
+                    onChangeText={this.onChangeQuestionText}
+                    value={question}>
                 </TextInput>
-
+                <TextInput
+                    style={styles.input}
+                    placeholder='Enter Answer'
+                    onChangeText={this.onChangeAnswerText}
+                    value={answer}>
+                </TextInput>
                 <TouchableOpacity
                     style={[styles.submitContainer, { backgroundColor: submitDisabled ? 'lightgray' : main }]}
                     disabled={submitDisabled}
                     onPress={this.onPressSubmit} >
                     <Text style={[styles.submitText, { color: submitDisabled ? 'darkgray' : white }]}>Submit</Text>
                 </TouchableOpacity>
-            </KeyboardAvoidingView >
-        )
+            </KeyboardAvoidingView>
+        );
     }
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -71,17 +70,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-
-    title: {
-        fontSize: 35,
-        textAlign: 'center',
-    },
-
     input: {
         height: 70,
         fontSize: 25,
         backgroundColor: 'white',
-        marginTop: 50,
+        marginTop: 20,
         padding: 20,
         width: '80%',
         borderRadius: 7,
@@ -90,7 +83,6 @@ const styles = StyleSheet.create({
         shadowColor: 'rgba(0, 0, 0, 0.24)',
         shadowOpacity: 0.8,
     },
-
     submitContainer: {
         marginTop: 20,
         height: 50,
@@ -102,7 +94,6 @@ const styles = StyleSheet.create({
         shadowColor: 'rgba(0, 0, 0, 0.24)',
         shadowOpacity: 0.8,
     },
-
     submitText: {
         color: white,
         fontSize: 20,
@@ -110,10 +101,13 @@ const styles = StyleSheet.create({
     }
 })
 
-function mapStateToProps({ dispatch }) {
+function mapStateToProps({ dispatch, ...props }, { navigation }) {
+    const id = navigation.getParam('id')
+    const deck = props[id]
     return {
-        dispatch
+        dispatch,
+        deck
     }
 }
 
-export default connect(mapStateToProps)(AddDeck)
+export default connect(mapStateToProps)(AddCard)

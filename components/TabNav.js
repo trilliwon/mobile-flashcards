@@ -23,7 +23,7 @@ const router = {
             tabBarIcon: ({ tintColor }) =>
                 Platform.OS === 'ios' && <FontAwesome name="plus-square" size={30} color={tintColor} />,
         }
-    }
+    },
 }
 
 const navigationOptions = {
