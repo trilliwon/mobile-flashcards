@@ -10,11 +10,8 @@
 
 - View decks
 - Create decks
-- Delete decks
 - Solve quiz from deck
 - Add cards to a specific deck
-- Delete cards from a specific deck
-
 
 ### License
 
