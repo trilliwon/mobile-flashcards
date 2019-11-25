@@ -52,7 +52,6 @@ class Decks extends Component {
     }
 
     render() {
-        console.log('---------- RENDER ----------')
         const { decks } = this.props
 
         return (
