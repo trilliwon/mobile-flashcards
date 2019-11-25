@@ -58,7 +58,8 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 17,
         color: 'gray',
-        marginBottom: 100,
+        marginTop: 20,
+        marginBottom: 50,
     },
     buttonContainer: {
         marginTop: 20,
