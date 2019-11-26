@@ -12,9 +12,10 @@ import AddCard from './AddCard'
 import Quiz from './Quiz'
 import { connect } from 'react-redux'
 import { handleReceiveDecks } from '../actions'
-import { createAppContainer, NavigationEvents } from 'react-navigation'
+import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import { main } from '../utils/colors'
+import { setLocalNotification } from '../utils/helpers'
 
 function Deck({ deck }) {
     return (
@@ -28,8 +29,27 @@ function Deck({ deck }) {
 class Decks extends Component {
 
     componentDidMount() {
-        const { dispatch } = this.props
+        const { dispatch, navigation } = this.props
         dispatch(handleReceiveDecks())
+        setLocalNotification()
+
+        this.focusListener = navigation.addListener('didFocus', () => {
+            dispatch(handleReceiveDecks())
+        })
+    }
+
+    componentWillUnmount() {
+        this.focusListener.remove()
+    }
+
+    componentWillUpdate() {
+        const parent = this.props.navigation.dangerouslyGetParent()
+        const newDeck = parent.getParam('deck')
+        parent.setParams({ deck: undefined })
+    
+        if (newDeck !== undefined) {
+            this.onPress(newDeck)
+        }
     }
 
     renderItem = ({ item, index, separators }) => {
@@ -55,7 +75,7 @@ class Decks extends Component {
         const { decks } = this.props
 
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={styles.container} >
                 <FlatList
                     ItemSeparatorComponent={this.renderSeparator}
                     data={decks}
@@ -99,14 +119,14 @@ const styles = StyleSheet.create({
 });
 
 
-function mapStateToProps({ ...props }) {
+function mapStateToProps({ ...props }, { navigation }) {
 
     const decks = Object.keys(props)
         .sort((a, b) => props[b].timestamp - props[a].timestamp)
         .map((key) => props[key])
 
     return {
-        decks
+        decks,
     }
 }
 

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { white, main } from '../utils/colors'
+import { clearLocalNotification } from '../utils/helpers'
+import { handleRemoveDeck } from '../actions'
 
 class DeckDetail extends Component {
 
@@ -17,10 +19,21 @@ class DeckDetail extends Component {
         this.props.navigation.navigate('Quiz', {
             id: deck.id,
         })
+
+        clearLocalNotification()
+    }
+
+    handleOnPressDelete = () => {
+        const { dispatch, deck, navigation } = this. props
+        dispatch(handleRemoveDeck(deck.id))
+        navigation.pop()
     }
 
     render() {
         const { deck } = this.props
+        if (deck === undefined) {
+            return <View></View>
+        }
         const quizDisabled = deck.questions.length === 0
 
         return (
@@ -39,6 +52,12 @@ class DeckDetail extends Component {
                     onPress={this.handleOnPressStartQuiz}
                     disabled={quizDisabled}>
                     <Text style={styles.buttonText}>Start Quiz</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.buttonContainer, { backgroundColor: 'red' }]}
+                    onPress={this.handleOnPressDelete}>
+                    <Text style={styles.buttonText}>Delete</Text>
                 </TouchableOpacity>
             </View>
         )

@@ -10,7 +10,6 @@ import {
 import { connect } from 'react-redux'
 import { handleAddDeck } from '../actions'
 import { main, white } from '../utils/colors'
-import { NavigationActions } from 'react-navigation'
 import { formatNewDeck } from '../utils/helpers'
 
 class AddDeck extends Component {
@@ -33,11 +32,11 @@ class AddDeck extends Component {
         this.setState(() => ({
             input: '',
         }))
-        this.toHome()
+        this.toHome(newDeck)
     }
 
-    toHome = () => {
-        this.props.navigation.dispatch(NavigationActions.back({ key: 'AddDeck' }))
+    toHome = (deck) => {
+        this.props.navigation.navigate('Decks', { deck })
     }
 
     render() {
